@@ -1,5 +1,6 @@
 import os
 import stat
+import subprocess
 from subprocess import call
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -7,7 +8,21 @@ in_file = os.path.join(dir_path, 'run.sh')
 out_file = os.path.join(dir_path, 'run_exec.sh')
 
 
+def get_outp(*args):
+    return subprocess.Popen(args,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE).communicate()[0]
+
+
+tc_dictionary = {
+    # '%teamcity.build.vcs.branch.ProWebsite_ProWebsite%': 'head/feature/BLOG-116'
+    '%teamcity.build.vcs.branch.ProWebsite_ProWebsite%': 'pull/feature/BLOG-116'
+}
+
+
 def include_templates(body):
+    for k, v in tc_dictionary.items():
+        body = body.replace(k, v)
     return body
 
 

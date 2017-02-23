@@ -5,19 +5,41 @@
 # +dictionary
 
 BASE_URL=https://sigma-software.atlassian.net/rest/api/2
-AUTH=${JIRA_AUTH}
 
-BACKLOG_ID=11
 IN_PROGRESS_ID=31
-DEVELOPMENT_DONE_ID=41
+IN_REVIEW_ID=51
+IN_TEST_ID=61
 
 # -dictionary
 
-# branch %teamcity.build.vcs.branch.ProWebsite_ProWebsite%
+BRANCH_NAME="%teamcity.build.vcs.branch.ProWebsite_ProWebsite%"
 
+is_feature_branch() {
+    if [[ ${BRANCH_NAME} =~ feature ]]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+is_pull_request() {
+    if [[ ${BRANCH_NAME} =~ pull ]]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
 
 get_issue_id() {
-    echo "BLOG-116"
+    if is_feature_branch
+    then
+        echo ${BRANCH_NAME} | sed "s:.*feature/\([a-zA-Z0-9-]*\).*:\1:g"
+    else
+        echo ""
+    fi
+
 }
 
 transit_issue() {
@@ -30,19 +52,37 @@ transit_issue() {
         --data "{\"transition\": {\"id\": \"${TRANSITION_ID}\"}}"
 }
 
+process_commits() {
+    return
+}
+
 get_transition_id() {
-    echo ${BACKLOG_ID}
-    echo ${IN_PROGRESS_ID}
-    echo ${DEVELOPMENT_DONE_ID}
+    if is_pull_request
+    then
+        echo ${IN_REVIEW_ID}
+        return
+    elif is_feature_branch
+    then
+        echo ${IN_PROGRESS_ID}
+        return
+    fi
 }
 
 ISSUE_ID=`get_issue_id`
 TRANSITION_ID=`get_transition_id`
 
-if [ -z "${ISSUE_ID}" ] || [ -z "${TRANSITION_ID}" ]
+echo  ${ISSUE_ID} ${TRANSITION_ID}
+
+if [ ! -z "${ISSUE_ID}" ] && [ ! -z "${TRANSITION_ID}" ]
 then
-    echo "transaction not found"
+    echo "single operation" ${ISSUE_ID} ${TRANSITION_ID}
+#    transit_issue ${ISSUE_ID} ${TRANSITION_ID}
     exit 0
 fi
 
-transit_issue ${ISSUE_ID} ${TRANSITION_ID}
+get_commits() {
+    curl -o lastBuild.tmp "%teamcity.serverUrl%/app/rest/buildTypes/id:%system.teamcity.buildType.id%/builds/status:SUCCESS" --user ${TC_AUTH}
+    last_commit=`xpath lastBuild.tmp '/build/revisions/revision/@version'| awk -F"\"" '{print $2}'`
+    COMMITS=`git log --pretty=format:"%s" $last_commit..%build.vcs.number%`
+
+}
