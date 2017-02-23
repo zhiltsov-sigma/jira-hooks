@@ -81,8 +81,19 @@ then
 fi
 
 get_commits() {
-    curl -o lastBuild.tmp "%teamcity.serverUrl%/app/rest/buildTypes/id:%system.teamcity.buildType.id%/builds/status:SUCCESS" --user ${TC_AUTH}
-    last_commit=`xpath lastBuild.tmp '/build/revisions/revision/@version'| awk -F"\"" '{print $2}'`
-    COMMITS=`git log --pretty=format:"%s" $last_commit..%build.vcs.number%`
+    curl -o ./lastBuild.tmp "%teamcity.serverUrl%/app/rest/buildTypes/id:%system.teamcity.buildType.id%/builds/status:SUCCESS" --user ${TC_AUTH}
+    LAST_SUCCESS_COMMIT=`xpath ./lastBuild.tmp '/build/revisions/revision/@version'| awk -F"\"" '{print $2}'`
+    rm -f ./lastBuild.tmp
+    CURRENT_COMMIT=%build.vcs.number%
 
+    if [ ${LAST_SUCCESS_COMMIT} = ${CURRENT_COMMIT} ]
+    then
+        ECHO ''
+        return
+    fi
+
+    COMMITS=`ls -l`
+    echo ${COMMITS}
 }
+
+get_commits

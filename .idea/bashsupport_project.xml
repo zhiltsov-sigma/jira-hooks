@@ -4,6 +4,7 @@
     <option name="globalVariables">
       <set>
         <option value="JIRA_AUTH" />
+        <option value="TC_AUTH" />
       </set>
     </option>
   </component>

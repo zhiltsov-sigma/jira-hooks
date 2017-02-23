@@ -15,14 +15,16 @@ def get_outp(*args):
 
 
 tc_dictionary = {
-    # '%teamcity.build.vcs.branch.ProWebsite_ProWebsite%': 'head/feature/BLOG-116'
-    '%teamcity.build.vcs.branch.ProWebsite_ProWebsite%': 'pull/feature/BLOG-116'
+    'teamcity.build.vcs.branch.ProWebsite_ProWebsite': 'head/develop',
+    'system.teamcity.buildType.id': 'ProWebsite_DeployToTestProVuMe',
+    'teamcity.serverUrl': 'http://10.40.102.254:8111',
+    'build.vcs.number': '58060fd7f87daa5539df0c6f9ab7dabaadaaa532',
 }
 
 
 def include_templates(body):
     for k, v in tc_dictionary.items():
-        body = body.replace(k, v)
+        body = body.replace('%{template}%'.format(template=k), v)
     return body
 
 
