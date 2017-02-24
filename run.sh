@@ -13,6 +13,8 @@ IN_TEST_ID=61
 # -dictionary
 
 BRANCH_NAME="%teamcity.build.branch%"
+echo $JIRA_AUTH
+echo $TC_AUTH
 
 is_feature_branch() {
     if [[ ${BRANCH_NAME} =~ feature ]]
