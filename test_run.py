@@ -15,7 +15,7 @@ def get_outp(*args):
 
 
 tc_dictionary = {
-    'teamcity.build.vcs.branch.ProWebsite_ProWebsite': 'head/develop',
+    'teamcity.build.branch': 'head/develop',
     'system.teamcity.buildType.id': 'ProWebsite_DeployToTestProVuMe',
     'teamcity.serverUrl': 'http://10.40.102.254:8111',
     'build.vcs.number': '58060fd7f87daa5539df0c6f9ab7dabaadaaa532',

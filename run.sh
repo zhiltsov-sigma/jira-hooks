@@ -12,7 +12,7 @@ IN_TEST_ID=61
 
 # -dictionary
 
-BRANCH_NAME="%teamcity.build.vcs.branch.ProWebsite_ProWebsite%"
+BRANCH_NAME="%teamcity.build.branch%"
 
 is_feature_branch() {
     if [[ ${BRANCH_NAME} =~ feature ]]
