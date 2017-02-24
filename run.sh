@@ -13,8 +13,6 @@ IN_TEST_ID=61
 # -dictionary
 
 BRANCH_NAME="%teamcity.build.branch%"
-echo $JIRA_AUTH
-echo $TC_AUTH
 
 is_feature_branch() {
     if [[ ${BRANCH_NAME} =~ feature ]]
@@ -84,17 +82,17 @@ fi
 
 get_commits() {
     curl -o ./lastBuild.tmp "%teamcity.serverUrl%/app/rest/buildTypes/id:%system.teamcity.buildType.id%/builds/status:SUCCESS" --user ${TC_AUTH}
-    LAST_SUCCESS_COMMIT=`xpath ./lastBuild.tmp '/build/revisions/revision/@version'| awk -F"\"" '{print $2}'`
-    rm -f ./lastBuild.tmp
+    LAST_SUCCESS_COMMIT=`cat ./lastBuild.tmp | xpath '/build/revisions/revision/@version'| awk -F"\"" '{print $2}'`
+#    rm -f ./lastBuild.tmp
     CURRENT_COMMIT=%build.vcs.number%
 
     if [ ${LAST_SUCCESS_COMMIT} = ${CURRENT_COMMIT} ]
     then
-        ECHO ''
+        ECHO ${LAST_SUCCESS_COMMIT}
         return
     fi
 
-    COMMITS=`ls -l`
+    COMMITS=`git log --pretty=format:"%s" ${LAST_SUCCESS_COMMIT}..${CURRENT_COMMIT}`
     echo ${COMMITS}
 }
 

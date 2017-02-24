@@ -15,10 +15,10 @@ def get_outp(*args):
 
 
 tc_dictionary = {
-    'teamcity.build.branch': 'head/develop',
-    'system.teamcity.buildType.id': 'ProWebsite_DeployToTestProVuMe',
+    'teamcity.build.branch': 'develop',
+    'system.teamcity.buildType.id': 'JiraHooks_TestBuild',
     'teamcity.serverUrl': 'http://10.40.102.254:8111',
-    'build.vcs.number': '58060fd7f87daa5539df0c6f9ab7dabaadaaa532',
+    'build.vcs.number': '981eec47e4e17d14ec5a8e92b4270a92adff8196',
 }
 
 
