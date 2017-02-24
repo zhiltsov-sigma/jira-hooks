@@ -15,10 +15,13 @@ def get_outp(*args):
 
 
 tc_dictionary = {
-    'teamcity.build.branch': 'head/develop',
-    'system.teamcity.buildType.id': 'ProWebsite_DeployToTestProVuMe',
+    # 'teamcity.build.branch': 'develop',
+    'teamcity.build.branch': 'pull/1',
+    # 'teamcity.build.branch': 'feature/BLOG-123',
+    'vcsroot.url': 'https://github.com/zhiltsov-sigma/jira-hooks.git',
+    'system.teamcity.buildType.id': 'JiraHooks_TestBuild',
     'teamcity.serverUrl': 'http://10.40.102.254:8111',
-    'build.vcs.number': '58060fd7f87daa5539df0c6f9ab7dabaadaaa532',
+    'build.vcs.number': '3f16fc958fd2c44799fca9cf13c63995aeaf5e52',
 }
 
 
