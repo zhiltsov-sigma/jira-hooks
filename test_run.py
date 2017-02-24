@@ -15,10 +15,12 @@ def get_outp(*args):
 
 
 tc_dictionary = {
-    'teamcity.build.branch': 'develop',
+    # 'teamcity.build.branch': 'develop',
+    # 'teamcity.build.branch': 'pull/feature/BLOG-123/head',
+    'teamcity.build.branch': 'feature/BLOG-123',
     'system.teamcity.buildType.id': 'JiraHooks_TestBuild',
     'teamcity.serverUrl': 'http://10.40.102.254:8111',
-    'build.vcs.number': '981eec47e4e17d14ec5a8e92b4270a92adff8196',
+    'build.vcs.number': '3f16fc958fd2c44799fca9cf13c63995aeaf5e52',
 }
 
 
