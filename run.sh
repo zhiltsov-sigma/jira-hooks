@@ -22,6 +22,7 @@ IN_TEST_KEYWORD=close
 
 # -dictionary
 
+VCS_URL=%vcsroot.url%
 BRANCH_NAME="%teamcity.build.branch%"
 
 is_feature_branch() {
@@ -42,10 +43,25 @@ is_pull_request() {
     fi
 }
 
+issue_from_branch() {
+    echo $1 | sed "s:.*feature/\([a-zA-Z0-9-]*\).*:\1:g"
+}
+
+issue_from_pull_request() {
+    AUTHOR_REPO=`echo -e "import re; t=re.search('github\.com/([^.]*)', '${VCS_URL}')\nif t:\n print(t.group(1))" | python`
+    PR_ID=`echo $1 | sed "s:pull/\([0-9][0-9]*\):\1:"`
+    BRANCH=`curl -s "https://api.github.com/repos/${AUTHOR_REPO}/pulls/${PR_ID}" | \
+        python -c "import sys, json; print(json.load(sys.stdin)['head']['ref'])"`
+    issue_from_branch ${BRANCH}
+}
+
 get_issue_id_for_branch() {
     if is_feature_branch
     then
-        echo ${BRANCH_NAME} | sed "s:.*feature/\([a-zA-Z0-9-]*\).*:\1:g"
+        issue_from_branch ${BRANCH_NAME}
+    elif is_pull_request
+    then
+        issue_from_pull_request ${BRANCH_NAME}
     else
         echo ""
     fi
@@ -141,12 +157,10 @@ process_commits() {
     rm -f ./commits.tmp
 }
 
-if is_feature_branch
+if is_feature_branch || is_pull_request
 then
-    echo "is_feature_branch"
     transit_blanch_based
     exit 0
 else
-    echo " no is_feature_branch"
     process_commits
 fi
