@@ -5,6 +5,7 @@
 if [ -z ${JIRA_URL} ] || [ -z ${JIRA_AUTH} ] || [ -z ${TC_AUTH} ]
 then
     echo "Not enough params"
+    exit 1
 fi
 
 JIRA_API_URL=${JIRA_URL}/rest/api/2
@@ -85,7 +86,10 @@ perform_transaction() {
     if [ ! -z "${ISSUE_ID}" ] && [ ! -z "${TRANSACTION_ID}" ]
     then
         echo "->" ${ISSUE_ID} $2
-        transit_issue ${ISSUE_ID} ${TRANSACTION_ID}
+        if [ -z ${PREVENT} ]
+        then
+            transit_issue ${ISSUE_ID} ${TRANSACTION_ID}
+        fi
     fi
 }
 
@@ -119,7 +123,7 @@ process_commit() {
 
 process_commits() {
     curl -o ./lastBuild.tmp "%teamcity.serverUrl%/app/rest/buildTypes/id:%system.teamcity.buildType.id%/builds/status:SUCCESS" --user ${TC_AUTH}
-    LAST_SUCCESS_COMMIT=`cat ./lastBuild.tmp | xpath '/build/revisions/revision/@version'| awk -F"\"" '{print $2}'`
+    LAST_SUCCESS_COMMIT=`echo -e "import xml.etree.ElementTree as ET;root = ET.fromstring('$(cat ./lastBuild.tmp)');print(root.findall('revisions/revision[@version]')[0]).attrib['version']" | python`
     CURRENT_COMMIT=%build.vcs.number%
 
     if [ ${LAST_SUCCESS_COMMIT} = ${CURRENT_COMMIT} ]
@@ -139,8 +143,10 @@ process_commits() {
 
 if is_feature_branch
 then
+    echo "is_feature_branch"
     transit_blanch_based
     exit 0
 else
+    echo " no is_feature_branch"
     process_commits
 fi
